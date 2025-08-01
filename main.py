@@ -8,15 +8,15 @@ async def run_at_10am(page):
     while True:
         now = datetime.now()
 
-        if now.hour == 21 and now.minute == 15 and not has_run_today:
+        if now.hour == 10 and now.minute == 0 and not has_run_today:
             print("🟢 It's 10:00 AM! Running function...")
-            page.click("div.br-area span#enter-bt-zumi a")
-            page.wait_for_selector('div.accept-con input#i14', timeout=10000)
-            page.click('div.accept-con input#i14')
-            page.wait_for_selector('div.con input#i8', timeout=10000)
-            page.click('div.con input#i8')
-            page.wait_for_selector('span.enter-bt span a', timeout=10000)
-            page.click('span.enter-bt span a')
+            await page.click("div.br-area span#enter-bt-zumi a")
+            await page.wait_for_selector('div.accept-con input#i14', timeout=10000)
+            await page.click('div.accept-con input#i14')
+            await page.wait_for_selector('div.con input#i8', timeout=10000)
+            await page.click('div.con input#i8')
+            await page.wait_for_selector('span.enter-bt span a', timeout=10000)
+            await page.click('span.enter-bt span a')
             has_run_today = True
             return False
 
@@ -24,7 +24,7 @@ async def run_at_10am(page):
         if now.hour > 10:
             has_run_today = False
 
-        await asyncio.sleep(1)  # Check every 10 seconds
+        await asyncio.sleep(0.1)  # Check every 10 seconds
 
 async def run():
     # tomorrow = datetime.now() + timedelta(days=1)
@@ -48,11 +48,9 @@ async def run():
         print("Navigating...")
         await page.goto(url, wait_until="load", timeout=300000)
         print("loaded")
-        await run_at_10am(page)
-        print("end=====")
-        # ==========login wait=============
         await page.wait_for_selector("div.br-area span#enter-bt-zumi a", timeout=0)
-        
+        await run_at_10am(page)
+        await asyncio.Event().wait()
         print("Finished scraping. Browser will stay open.")
         await asyncio.sleep(30)  # Keep browser open for 1 hour
 
